@@ -11,7 +11,12 @@ const COLORS = {
   border: "#c8e6c9",
   white: "#ffffff",
   black: "#000000",
-
+  // Status colors
+  statusGreen: "#66BB6A",
+  statusRed: "#E57373",
+  statusBlue: "#64B5F6",
+  statusOrange: "#FFB74D",
+  statusGrey: "#B0BEC5",
 };
 
 // RETRO
@@ -27,7 +32,12 @@ const COLORS = {
 //   border: "#e2d6c1",
 //   white: "#ffffff",
 //   black: "#000000",
-
+//   // Status colors
+//   statusGreen: "#81C784",
+//   statusRed: "#d4543a",
+//   statusBlue: "#7fb3d3",
+//   statusOrange: "#f4a261",
+//   statusGrey: "#B0BEC5",
 // };
 
 // OCEAN
@@ -43,7 +53,12 @@ const COLORS = {
 //   border: "#bbdefb",
 //   white: "#ffffff",
 //   black: "#000000",
-
+//   // Status colors
+//   statusGreen: "#4CAF50",
+//   statusRed: "#f44336",
+//   statusBlue: "#2196F3",
+//   statusOrange: "#FF9800",
+// statusGrey: "#B0BEC5",
 // };
 
 // BLOSSOM
@@ -60,7 +75,12 @@ const COLORS = {
   border: "#f8bbd0",
   white: "#ffffff",
   black: "#000000",
-
+  // Status colors
+  statusGreen: "#66BB6A",
+  statusRed: "#E91E63",
+  statusBlue: "#9C27B0",
+  statusOrange: "#FF7043",
+  statusGrey: "#B0BEC5",
   
 };
 */
