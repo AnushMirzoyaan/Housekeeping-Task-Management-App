@@ -181,7 +181,7 @@ export default function Dashboard() {
                       </Text>
                     </View>
 
-                    {task.timeSpent && (
+                    {task.timeSpent > 0 && (
                       <View style={styles.taskDetailRow}>
                         <Text style={styles.taskDetailLabel}>Time Spent:</Text>
                         <Text style={styles.taskDetailValue}>
