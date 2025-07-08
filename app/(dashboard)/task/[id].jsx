@@ -10,69 +10,43 @@ import COLORS from "../../../constants/colors";
 import useTasksStore from "../../../store/useTasksStore";
 
 export default function TaskDetail() {
-  const { id } = useLocalSearchParams();
+  const { id } = useLocalSearchParams() || {};
   const router = useRouter();
 
   const tasks = useTasksStore((state) => state.tasks);
   const updateTask = useTasksStore((state) => state.updateTask);
+  const startTimer = useTasksStore((state) => state.startTimer);
+  const pauseTimer = useTasksStore((state) => state.pauseTimer);
+  const stopTimer = useTasksStore((state) => state.stopTimer);
+  const timer = useTasksStore((state) => state.timers[id] || 0);
 
   const [task, setTask] = useState(null);
   const [status, setStatus] = useState("notStarted");
-  const [timer, setTimer] = useState(0);
-  const [isActive, setIsActive] = useState(false);
 
   useEffect(() => {
+    if (!id) {
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: "Task ID is missing",
+      });
+      router.replace("/dashboard"); 
+      return;
+    }
+
     const found = tasks.find((t) => t._id === id);
     if (found) {
       setTask(found);
       setStatus(found.status || "notStarted");
-      setTimer(found.timeSpent || 0);
-
-      if (found.status === "inProgress" && !isActive) {
-        setIsActive(true);
-      } else if (found.status !== "inProgress") {
-        setIsActive(false);
-      }
-    }
-  }, [id, tasks]);
-
-  useEffect(() => {
-    let interval;
-    if (isActive) {
-      interval = setInterval(() => {
-        setTimer((prev) => {
-          const newTimer = prev + 1;
-          if (task) {
-            updateTask({
-              ...task,
-              timeSpent: newTimer,
-            });
-          }
-          return newTimer;
-        });
-      }, 1000);
-    }
-    return () => clearInterval(interval);
-  }, [isActive, task, updateTask]);
-
-  useEffect(() => {
-    if (!task) return;
-
-    const estimatedSeconds = (task.estimatedDuration || task.duration) * 60;
-
-    if (
-      timer > estimatedSeconds &&
-      status !== "completed" &&
-      status !== "overdue"
-    ) {
-      updateTask({
-        ...task,
-        status: "overdue",
-        timeSpent: timer,
+    } else {
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: "Task not found",
       });
-      setStatus("overdue");
+      router.replace("/dashboard");
     }
-  }, [timer, status, task, updateTask]);
+  }, [id, tasks, router]);
 
   const formatTime = (seconds) => {
     const min = Math.floor(seconds / 60);
@@ -82,38 +56,34 @@ export default function TaskDetail() {
 
   const getProgressPercentage = () => {
     if (!task) return 0;
-
     if (status === "completed") return 100;
-
     const estimatedSeconds = (task.estimatedDuration || task.duration) * 60;
     return Math.min((timer / estimatedSeconds) * 100, 100);
   };
 
   const getProgressBarColor = () => {
     if (!task) return COLORS.statusGrey;
-
     const estimatedSeconds = (task.estimatedDuration || task.duration) * 60;
-
     if (timer > estimatedSeconds && status !== "completed") {
       return COLORS.statusRed;
     }
-
     return getStatusColor(status);
   };
 
-  const saveStatusAndTime = (newStatus, newTimeSpent) => {
+  const saveStatusAndTime = (newStatus) => {
     if (!task) return;
     setStatus(newStatus);
     updateTask({
       ...task,
       status: newStatus,
-      timeSpent: newTimeSpent,
+      timeSpent: timer,
     });
   };
 
   const handleStart = () => {
-    setIsActive(true);
-    saveStatusAndTime("inProgress", timer);
+    if (!task) return;
+    startTimer(id);
+    saveStatusAndTime("inProgress");
     Toast.show({
       type: "success",
       text1: "Task Started",
@@ -122,8 +92,9 @@ export default function TaskDetail() {
   };
 
   const handlePause = () => {
-    setIsActive(false);
-    saveStatusAndTime("paused", timer);
+    if (!task) return;
+    pauseTimer(id);
+    saveStatusAndTime("paused");
     Toast.show({
       type: "info",
       text1: "Task Paused",
@@ -132,8 +103,9 @@ export default function TaskDetail() {
   };
 
   const handleFinish = () => {
-    setIsActive(false);
-    saveStatusAndTime("completed", timer);
+    if (!task) return;
+    stopTimer(id);
+    saveStatusAndTime("completed");
     Toast.show({
       type: "success",
       text1: "Task Completed",
@@ -180,7 +152,6 @@ export default function TaskDetail() {
 
       <View style={styles.timerCard}>
         <Text style={styles.timerCardTitle}>Time Tracker</Text>
-
         <View style={styles.timerDisplay}>
           <View style={styles.circularProgress}>
             <View
@@ -198,7 +169,6 @@ export default function TaskDetail() {
             <Text style={styles.timerText}>{formatTime(timer)}</Text>
           </View>
         </View>
-
         <View style={styles.estimatedTime}>
           <Ionicons
             name="time-outline"
@@ -220,7 +190,6 @@ export default function TaskDetail() {
               <Text style={styles.primaryButtonText}>Start Task</Text>
             </TouchableOpacity>
           )}
-
           {status === "inProgress" && (
             <View style={styles.buttonRow}>
               <TouchableOpacity
@@ -239,7 +208,6 @@ export default function TaskDetail() {
               </TouchableOpacity>
             </View>
           )}
-
           {status === "paused" && (
             <View style={styles.buttonRow}>
               <TouchableOpacity
@@ -286,13 +254,10 @@ export default function TaskDetail() {
               {task.estimatedDuration || task.duration} minutes
             </Text>
           </View>
-
-          {task.timeSpent > 0 && (
+          {timer > 0 && (
             <View style={styles.detailRow}>
-              <Text style={styles.detailLabel}>Time Spent:</Text>
-              <Text style={styles.detailValue}>
-                {formatTime(task.timeSpent)}
-              </Text>
+              <Text style={styles.detailLabel}>Time Spent</Text>
+              <Text style={styles.detailValue}>{formatTime(timer)}</Text>
             </View>
           )}
         </View>
