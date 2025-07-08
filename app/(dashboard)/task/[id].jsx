@@ -100,7 +100,8 @@ export default function TaskDetail() {
   const handleFinish = () => {
     if (!task) return;
     stopTimer(id);
-    saveStatusAndTime("completed");
+    const newStatus = status === "overdue" ? "overdue" : "completed";
+    saveStatusAndTime(newStatus);
     Toast.show({
       type: "success",
       text1: "Task Completed",
@@ -185,7 +186,7 @@ export default function TaskDetail() {
               <Text style={styles.primaryButtonText}>Start Task</Text>
             </TouchableOpacity>
           )}
-          {status === "inProgress" && (
+          {(status === "inProgress" || status === "overdue") && (
             <View style={styles.buttonRow}>
               <TouchableOpacity
                 style={[styles.primaryButton, styles.pauseButton]}
