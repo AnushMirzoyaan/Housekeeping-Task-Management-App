@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 import Toast from "react-native-toast-message";
 import { getStatusColor, getStatusText } from "../../../utils/taskStatusUtils";
+import { formatTime } from "../../../utils/timeUtils";
 
 import styles from "../../../assets/styles/taskDetails.styles";
 import COLORS from "../../../constants/colors";
@@ -30,7 +31,7 @@ export default function TaskDetail() {
         text1: "Error",
         text2: "Task ID is missing",
       });
-      router.replace("/dashboard"); 
+      router.replace("/dashboard");
       return;
     }
 
@@ -47,12 +48,6 @@ export default function TaskDetail() {
       router.replace("/dashboard");
     }
   }, [id, tasks, router]);
-
-  const formatTime = (seconds) => {
-    const min = Math.floor(seconds / 60);
-    const sec = seconds % 60;
-    return `${min.toString().padStart(2, "0")}:${sec.toString().padStart(2, "0")}`;
-  };
 
   const getProgressPercentage = () => {
     if (!task) return 0;

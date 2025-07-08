@@ -16,6 +16,7 @@ import {
   getStatusColor,
   getStatusText,
 } from "../../utils/taskStatusUtils";
+import { formatTime } from "../../utils/timeUtils";
 
 import styles from "../../assets/styles/profile.styles";
 import COLORS from "../../constants/colors";
@@ -40,14 +41,6 @@ export default function Dashboard() {
       setLoading(false);
     }, 1000);
   }, []);
-
-  const formatTime = (seconds) => {
-    const minutes = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${minutes.toString().padStart(2, "0")}:${secs
-      .toString()
-      .padStart(2, "0")}`;
-  };
 
   const getFilteredTasks = () => {
     let filteredTasks = [...tasks];
@@ -187,6 +180,15 @@ export default function Dashboard() {
                         {task.assignedTo || "Unassigned"}
                       </Text>
                     </View>
+
+                    {task.timeSpent && (
+                      <View style={styles.taskDetailRow}>
+                        <Text style={styles.taskDetailLabel}>Time Spent:</Text>
+                        <Text style={styles.taskDetailValue}>
+                          {formatTime(task.timeSpent)}
+                        </Text>
+                      </View>
+                    )}
                   </View>
 
                   <View style={styles.taskCardFooter}>
