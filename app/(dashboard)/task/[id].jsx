@@ -49,6 +49,15 @@ export default function TaskDetail() {
     }
   }, [id, tasks, router]);
 
+  useEffect(() => {
+    if (task && status !== "completed") {
+      const estimatedSeconds = (task.estimatedDuration || task.duration) * 60;
+      if (timer > estimatedSeconds && status !== "overdue") {
+        setStatus("overdue");
+      }
+    }
+  }, [timer, task, status]);
+
   const getProgressPercentage = () => {
     if (!task) return 0;
     if (status === "completed") return 100;
@@ -121,7 +130,7 @@ export default function TaskDetail() {
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       <View style={styles.header}>
         <TouchableOpacity
-          onPress={() => router.back()}
+          onPress={() => router.push("/(dashboard)/")}
           style={styles.backButton}
         >
           <Ionicons name="arrow-back" size={24} color={COLORS.textDark} />
